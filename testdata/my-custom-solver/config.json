@@ -1,1 +1,5 @@
-{}
+{
+  "apiID": 12345,
+  "apiToken": "abcdefg1234567",
+  "ttl": 600
+}
