@@ -3,6 +3,7 @@ module github.com/jetstack/cert-manager-webhook-dnspod
 go 1.12
 
 require (
+	github.com/decker502/dnspod-go v0.2.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jetstack/cert-manager v0.8.0-alpha.0

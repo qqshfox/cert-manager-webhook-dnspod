@@ -54,6 +54,8 @@ github.com/cpu/goacmedns v0.0.0-20180701200144-565ecf2a84df/go.mod h1:sesf/pNnCY
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/decker502/dnspod-go v0.2.0 h1:6dwhUFCYbC5bgpebLKn7PrI43e/5mn9tpUL9YcYCdTU=
+github.com/decker502/dnspod-go v0.2.0/go.mod h1:qsurYu1FgxcDwfSwXJdLt4kRsBLZeosEb9uq4Sy+08g=
 github.com/denisenkom/go-mssqldb v0.0.0-20190412130859-3b1d194e553a/go.mod h1:zAg7JM8CkOJ43xKXIj7eRO9kmWm/TW578qo+oDO6tuM=
 github.com/dgrijalva/jwt-go v0.0.0-20160705203006-01aeca54ebda/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumCAMpl/TFQ4/5kLM=
