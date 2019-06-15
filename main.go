@@ -45,12 +45,6 @@ func main() {
 // To do so, it must implement the `github.com/jetstack/cert-manager/pkg/acme/webhook.Solver`
 // interface.
 type customDNSProviderSolver struct {
-	// If a Kubernetes 'clientset' is needed, you must:
-	// 1. uncomment the additional `client` field in this structure below
-	// 2. uncomment the "k8s.io/client-go/kubernetes" import at the top of the file
-	// 3. uncomment the relevant code in the Initialize method below
-	// 4. ensure your webhook's service account has the required RBAC role
-	//    assigned to it for interacting with the Kubernetes APIs you need.
 	client *kubernetes.Clientset
 
 	dnspod map[int]*dnspod.Client
@@ -71,11 +65,6 @@ type customDNSProviderSolver struct {
 // be used by your provider here, you should reference a Kubernetes Secret
 // resource and fetch these credentials using a Kubernetes clientset.
 type customDNSProviderConfig struct {
-	// Change the two fields below according to the format of the configuration
-	// to be decoded.
-	// These fields will be set by users in the
-	// `issuer.spec.acme.dns01.providers.webhook.config` field.
-
 	APIID             int                                    `json:"apiID"`
 	APITokenSecretRef certmanager_v1alpha1.SecretKeySelector `json:"apiTokenSecretRef"`
 	TTL               *int                                   `json:"ttl"`
@@ -86,7 +75,6 @@ type customDNSProviderConfig struct {
 // This should be unique **within the group name**, i.e. you can have two
 // solvers configured with the same Name() **so long as they do not co-exist
 // within a single webhook deployment**.
-// For example, `cloudflare` may be used as the name of a solver.
 func (c *customDNSProviderSolver) Name() string {
 	return "dnspod"
 }
@@ -102,14 +90,11 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 		return err
 	}
 
-	// TODO: do something more useful with the decoded configuration
-	fmt.Printf("Decoded configuration %v", cfg)
 	dnspodClient, err := c.getDNSPod(ch, cfg)
 	if err != nil {
 		return err
 	}
 
-	// TODO: add code that sets a record in the DNS provider's console
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
 	if err != nil {
 		return err
@@ -136,14 +121,11 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 		return err
 	}
 
-	// TODO: do something more useful with the decoded configuration
-	fmt.Printf("Decoded configuration %v", cfg)
 	dnspodClient, err := c.getDNSPod(ch, cfg)
 	if err != nil {
 		return err
 	}
 
-	// TODO: add code that deletes a record from the DNS provider's console
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
 	if err != nil {
 		return err
@@ -178,17 +160,11 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
 func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
-	///// UNCOMMENT THE BELOW CODE TO MAKE A KUBERNETES CLIENTSET AVAILABLE TO
-	///// YOUR CUSTOM DNS PROVIDER
-
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
 		return err
 	}
-
 	c.client = cl
-
-	///// END OF CODE TO MAKE KUBERNETES CLIENTSET AVAILABLE
 
 	c.dnspod = make(map[int]*dnspod.Client)
 
