@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	//"k8s.io/client-go/kubernetes"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
+	certmanager_v1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/issuer/acme/dns/util"
 
 	"github.com/decker502/dnspod-go"
@@ -49,7 +51,7 @@ type customDNSProviderSolver struct {
 	// 3. uncomment the relevant code in the Initialize method below
 	// 4. ensure your webhook's service account has the required RBAC role
 	//    assigned to it for interacting with the Kubernetes APIs you need.
-	//client kubernetes.Clientset
+	client *kubernetes.Clientset
 
 	dnspod map[int]*dnspod.Client
 }
@@ -74,9 +76,9 @@ type customDNSProviderConfig struct {
 	// These fields will be set by users in the
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
-	APIID    int    `json:"apiID"`
-	APIToken string `json:"apiToken"`
-	TTL      *int   `json:"ttl"`
+	APIID             int                                    `json:"apiID"`
+	APITokenSecretRef certmanager_v1alpha1.SecretKeySelector `json:"apiTokenSecretRef"`
+	TTL               *int                                   `json:"ttl"`
 }
 
 // Name is used as the name for this DNS solver when referencing it on the ACME
@@ -102,7 +104,10 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 
 	// TODO: do something more useful with the decoded configuration
 	fmt.Printf("Decoded configuration %v", cfg)
-	dnspodClient := c.getDNSPod(cfg)
+	dnspodClient, err := c.getDNSPod(ch, cfg)
+	if err != nil {
+		return err
+	}
 
 	// TODO: add code that sets a record in the DNS provider's console
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
@@ -133,7 +138,10 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 
 	// TODO: do something more useful with the decoded configuration
 	fmt.Printf("Decoded configuration %v", cfg)
-	dnspodClient := c.getDNSPod(cfg)
+	dnspodClient, err := c.getDNSPod(ch, cfg)
+	if err != nil {
+		return err
+	}
 
 	// TODO: add code that deletes a record from the DNS provider's console
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
@@ -173,12 +181,12 @@ func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stop
 	///// UNCOMMENT THE BELOW CODE TO MAKE A KUBERNETES CLIENTSET AVAILABLE TO
 	///// YOUR CUSTOM DNS PROVIDER
 
-	//cl, err := kubernetes.NewForConfig(kubeClientConfig)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//c.client = cl
+	cl, err := kubernetes.NewForConfig(kubeClientConfig)
+	if err != nil {
+		return err
+	}
+
+	c.client = cl
 
 	///// END OF CODE TO MAKE KUBERNETES CLIENTSET AVAILABLE
 
@@ -187,17 +195,29 @@ func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stop
 	return nil
 }
 
-func (c *customDNSProviderSolver) getDNSPod(cfg customDNSProviderConfig) *dnspod.Client {
+func (c *customDNSProviderSolver) getDNSPod(ch *v1alpha1.ChallengeRequest, cfg customDNSProviderConfig) (*dnspod.Client, error) {
 	apiID := cfg.APIID
 	dnspodClient, ok := c.dnspod[apiID]
 	if !ok {
-		key := fmt.Sprintf("%d,%s", cfg.APIID, cfg.APIToken)
+		ref := cfg.APITokenSecretRef
+
+		secret, err := c.client.CoreV1().Secrets(ch.ResourceNamespace).Get(ref.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		apiToken, ok := secret.Data[ref.Key]
+		if !ok {
+			return nil, fmt.Errorf("no api token for %q in secret '%s/%s'", ref.Name, ref.Key, ch.ResourceNamespace)
+		}
+
+		key := fmt.Sprintf("%d,%s", cfg.APIID, apiToken)
 		params := dnspod.CommonParams{LoginToken: key, Format: "json"}
 		dnspodClient = dnspod.NewClient(params)
 		c.dnspod[cfg.APIID] = dnspodClient
 	}
 
-	return dnspodClient
+	return dnspodClient, nil
 }
 
 // loadConfig is a small helper function that decodes JSON configuration into

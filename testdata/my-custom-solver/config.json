@@ -1,5 +1,8 @@
 {
   "apiID": 12345,
-  "apiToken": "abcdefg1234567",
+  "apiTokenSecretRef": {
+    "Name": "dnspod-credentials",
+    "Key": "api-token"
+  },
   "ttl": 600
 }
