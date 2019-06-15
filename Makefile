@@ -11,6 +11,9 @@ verify:
 build:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
 
+push:
+	docker push "$(IMAGE_NAME):$(IMAGE_TAG)"
+
 .PHONY: rendered-manifest.yaml
 rendered-manifest.yaml:
 	helm template \
