@@ -132,7 +132,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	}
 
 	records, err := findTxtRecords(dnspodClient, domainID, ch.ResolvedZone, ch.ResolvedFQDN)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "No records") {
 		return err
 	}
 
