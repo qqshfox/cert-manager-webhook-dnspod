@@ -16,7 +16,7 @@ import (
 	certmanager_v1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/issuer/acme/dns/util"
 
-	"github.com/decker502/dnspod-go"
+	"github.com/qqshfox/dnspod-go"
 )
 
 const (
