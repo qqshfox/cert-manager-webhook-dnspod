@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "0.1.2"
 description: DNSPod Webhook for Cert Manager
 name: cert-manager-webhook-dnspod
-version: 0.1.2
+version: 0.2.0
