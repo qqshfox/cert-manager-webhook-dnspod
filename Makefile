@@ -20,4 +20,4 @@ rendered-manifest.yaml:
 	    --name cert-manager-webhook-dnspod \
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=$(IMAGE_TAG) \
-        deploy/example-webhook > "$(OUT)/rendered-manifest.yaml"
+        deploy/cert-manager-webhook-dnspod > "$(OUT)/rendered-manifest.yaml"

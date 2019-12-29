@@ -4,11 +4,11 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
-  name: {{ include "example-webhook.selfSignedIssuer" . }}
+  name: {{ include "cert-manager-webhook-dnspod.selfSignedIssuer" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-dnspod.name" . }}
+    chart: {{ include "cert-manager-webhook-dnspod.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -20,19 +20,19 @@ spec:
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: {{ include "example-webhook.rootCACertificate" . }}
+  name: {{ include "cert-manager-webhook-dnspod.rootCACertificate" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-dnspod.name" . }}
+    chart: {{ include "cert-manager-webhook-dnspod.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  secretName: {{ include "example-webhook.rootCACertificate" . }}
+  secretName: {{ include "cert-manager-webhook-dnspod.rootCACertificate" . }}
   duration: 43800h # 5y
   issuerRef:
-    name: {{ include "example-webhook.selfSignedIssuer" . }}
-  commonName: "ca.example-webhook.cert-manager"
+    name: {{ include "cert-manager-webhook-dnspod.selfSignedIssuer" . }}
+  commonName: "ca.cert-manager-webhook-dnspod.cert-manager"
   isCA: true
 
 ---
@@ -41,16 +41,16 @@ spec:
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
-  name: {{ include "example-webhook.rootCAIssuer" . }}
+  name: {{ include "cert-manager-webhook-dnspod.rootCAIssuer" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-dnspod.name" . }}
+    chart: {{ include "cert-manager-webhook-dnspod.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   ca:
-    secretName: {{ include "example-webhook.rootCACertificate" . }}
+    secretName: {{ include "cert-manager-webhook-dnspod.rootCACertificate" . }}
 
 ---
 
@@ -58,33 +58,33 @@ spec:
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: {{ include "example-webhook.servingCertificate" . }}
+  name: {{ include "cert-manager-webhook-dnspod.servingCertificate" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-dnspod.name" . }}
+    chart: {{ include "cert-manager-webhook-dnspod.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  secretName: {{ include "example-webhook.servingCertificate" . }}
+  secretName: {{ include "cert-manager-webhook-dnspod.servingCertificate" . }}
   duration: 8760h # 1y
   issuerRef:
-    name: {{ include "example-webhook.rootCAIssuer" . }}
+    name: {{ include "cert-manager-webhook-dnspod.rootCAIssuer" . }}
   dnsNames:
-  - {{ include "example-webhook.fullname" . }}
-  - {{ include "example-webhook.fullname" . }}.{{ .Release.Namespace }}
-  - {{ include "example-webhook.fullname" . }}.{{ .Release.Namespace }}.svc
+  - {{ include "cert-manager-webhook-dnspod.fullname" . }}
+  - {{ include "cert-manager-webhook-dnspod.fullname" . }}.{{ .Release.Namespace }}
+  - {{ include "cert-manager-webhook-dnspod.fullname" . }}.{{ .Release.Namespace }}.svc
 {{- if .Values.clusterIssuer.enabled -}}
 ---
 
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: ClusterIssuer
 metadata:
-  name: {{ include "example-webhook.clusterIssuer" . }}
+  name: {{ include "cert-manager-webhook-dnspod.clusterIssuer" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-dnspod.name" . }}
+    chart: {{ include "cert-manager-webhook-dnspod.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -96,7 +96,7 @@ spec:
 {{- end }}
     email: {{ .Values.clusterIssuer.email }}
     privateKeySecretRef:
-      name: {{ include "example-webhook.fullname" . }}-letsencrypt
+      name: {{ include "cert-manager-webhook-dnspod.fullname" . }}-letsencrypt
     solvers:
     - dns01:
         webhook:
@@ -106,5 +106,5 @@ spec:
             apiID: {{ required ".Values.secrets.apiID is required" .Values.secrets.apiID }}
             apiTokenSecretRef:
               key: api-token
-              name: {{ include "example-webhook.fullname" . }}-secret
+              name: {{ include "cert-manager-webhook-dnspod.fullname" . }}-secret
 {{- end -}}
