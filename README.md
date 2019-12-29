@@ -9,110 +9,13 @@ This is a webhook solver for [DNSPod](https://www.dnspod.cn).
 
 ## Installation
 
+Generate API ID and API Token from DNSPod (https://support.dnspod.cn/Kb/showarticle/tsid/227/).
+
 ```console
-$ helm install --name cert-manager-webhook-dnspod ./deploy/example-webhook
-```
-
-## Issuer
-
-1. Generate API ID and API Token from DNSPod (https://support.dnspod.cn/Kb/showarticle/tsid/227/)
-2. Create secret to store the API Token
-```console
-$ kubectl --namespace cert-manager create secret generic \
-    dnspod-credentials --from-literal=api-token='<DNSPOD_API_TOKEN>'
-```
-
-3. Grant permission for service-account to get the secret
-```yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: cert-manager-webhook-dnspod:secret-reader
-rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  resourceNames: ["dnspod-credentials"]
-  verbs: ["get", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: RoleBinding
-metadata:
-  name: cert-manager-webhook-dnspod:secret-reader
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: cert-manager-webhook-dnspod:secret-reader
-subjects:
-  - apiGroup: ""
-    kind: ServiceAccount
-    name: cert-manager-webhook-dnspod
-```
-
-4. Create a staging issuer *Optional*
-```yaml
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Issuer
-metadata:
-  name: letsencrypt-staging
-spec:
-  acme:
-    # The ACME server URL
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-
-    # Email address used for ACME registration
-    email: user@example.com # REPLACE THIS WITH YOUR EMAIL!!!
-
-    # Name of a secret used to store the ACME account private key
-    privateKeySecretRef:
-      name: letsencrypt-staging
-
-    solvers:
-    - dns01:
-        webhook:
-          groupName: example.com # REPLACE THIS TO YOUR GROUP
-          solverName: dnspod
-          config:
-            apiID: 12345 # REPLACE WITH API ID FROM DNSPOD!!!
-            apiTokenSecretRef:
-              key: api-token
-              name: dnspod-credentials
-```
-
-5. Create a production issuer
-```yaml
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Issuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    # The ACME server URL
-    server: https://acme-v02.api.letsencrypt.org/directory
-
-    # Email address used for ACME registration
-    email: user@example.com # REPLACE THIS WITH YOUR EMAIL!!!
-
-    # Name of a secret used to store the ACME account private key
-    privateKeySecretRef:
-      name: letsencrypt-prod
-
-    solvers:
-    - dns01:
-        webhook:
-          groupName: example.com # REPLACE THIS TO YOUR GROUP
-          solverName: dnspod
-          config:
-            apiID: 12345 # REPLACE WITH API ID FROM DNSPOD!!!
-            apiTokenSecretRef:
-              key: api-token
-              name: dnspod-credentials
-```
-
-## Certificate
-
-1. Issue a certificate
-```yaml
-#TODO
+$ helm install --name cert-manager-webhook-dnspod ./deploy/example-webhook \
+    --set groupName=<GROUP_NAME> \
+    --set secrets.apiID=<DNSPOD_API_ID>,secrets.apiToken=<DNSPOD_API_TOKEN> \
+    --set clusterIssuer.enabled=true,clusterIssuer.email=<EMAIL_ADDRESS>
 ```
 
 ### Automatically creating Certificates for Ingress resources

@@ -12,6 +12,15 @@ certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
 
+#secrets:
+# apiID:
+# apiToken:
+
+clusterIssuer:
+  enabled: false
+  staging: false
+  #email:
+
 image:
   repository: qqshfox/cert-manager-webhook-dnspod
   #tag: latest
