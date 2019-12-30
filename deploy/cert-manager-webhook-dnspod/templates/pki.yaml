@@ -74,7 +74,7 @@ spec:
   - {{ include "cert-manager-webhook-dnspod.fullname" . }}
   - {{ include "cert-manager-webhook-dnspod.fullname" . }}.{{ .Release.Namespace }}
   - {{ include "cert-manager-webhook-dnspod.fullname" . }}.{{ .Release.Namespace }}.svc
-{{- if .Values.clusterIssuer.enabled -}}
+{{- if .Values.clusterIssuer.enabled }}
 ---
 
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -107,4 +107,4 @@ spec:
             apiTokenSecretRef:
               key: api-token
               name: {{ include "cert-manager-webhook-dnspod.fullname" . }}-secret
-{{- end -}}
+{{- end }}
