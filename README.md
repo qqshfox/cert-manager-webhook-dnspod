@@ -4,8 +4,10 @@ This is a webhook solver for [DNSPod](https://www.dnspod.cn).
 
 ## Prerequisites
 
-* [cert-manager](https://github.com/jetstack/cert-manager): *tested with 0.8.0*
-    - [Installing on Kubernetes](https://docs.cert-manager.io/en/release-0.8/getting-started/install/kubernetes.html)
+* [cert-manager](https://github.com/jetstack/cert-manager) >= 0.11
+    - [Installing on Kubernetes](https://docs.cert-manager.io/en/release-0.11/getting-started/install/kubernetes.html)
+
+*Note: use version < 0.3 with cert-manager < 0.11*
 
 ## Installation
 
@@ -20,7 +22,7 @@ $ helm install --name cert-manager-webhook-dnspod ./deploy/cert-manager-webhook-
 
 ### Automatically creating Certificates for Ingress resources
 
-See [this](https://docs.cert-manager.io/en/latest/tasks/issuing-certificates/ingress-shim.html).
+See [this](https://cert-manager.io/docs/usage/ingress/#optional-configuration).
 
 ## Development
 
