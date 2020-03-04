@@ -13,7 +13,7 @@ import (
 
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
-	certmanager_v1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
+	cmmeta "github.com/jetstack/cert-manager/pkg/apis/meta/v1"
 	"github.com/jetstack/cert-manager/pkg/issuer/acme/dns/util"
 
 	"github.com/qqshfox/dnspod-go"
@@ -65,9 +65,9 @@ type customDNSProviderSolver struct {
 // be used by your provider here, you should reference a Kubernetes Secret
 // resource and fetch these credentials using a Kubernetes clientset.
 type customDNSProviderConfig struct {
-	APIID             int                                    `json:"apiID"`
-	APITokenSecretRef certmanager_v1alpha1.SecretKeySelector `json:"apiTokenSecretRef"`
-	TTL               *int                                   `json:"ttl"`
+	APIID             int                      `json:"apiID"`
+	APITokenSecretRef cmmeta.SecretKeySelector `json:"apiTokenSecretRef"`
+	TTL               *int                     `json:"ttl"`
 }
 
 // Name is used as the name for this DNS solver when referencing it on the ACME
