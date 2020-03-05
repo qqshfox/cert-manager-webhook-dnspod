@@ -21,6 +21,11 @@ clusterIssuer:
   staging: false
   #email:
 
+  # https://cert-manager.io/docs/configuration/acme/#adding-multiple-solver-types
+  #selector:
+  #  dnsZones:
+  #    - 'example.com'
+
 image:
   repository: qqshfox/cert-manager-webhook-dnspod
   #tag: latest
