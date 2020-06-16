@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/klog"
 
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
@@ -87,22 +88,26 @@ func (c *customDNSProviderSolver) Name() string {
 func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
+		klog.Errorf("Failed to log config %v: %v", ch.Config, err)
 		return err
 	}
 
 	dnspodClient, err := c.getDNSPod(ch, cfg)
 	if err != nil {
+		klog.Errorf("Failed to get dnspod client %v: %v", cfg, err)
 		return err
 	}
 
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
 	if err != nil {
+		klog.Errorf("Failed to get domain id %s: %v", ch.ResolvedZone, err)
 		return err
 	}
 
 	recordAttributes := newTxtRecord(ch.ResolvedZone, ch.ResolvedFQDN, ch.Key, *cfg.TTL)
 	_, _, err = dnspodClient.Domains.CreateRecord(domainID, *recordAttributes)
 	if err != nil {
+		klog.Errorf("Failed to create record: %v", err)
 		return fmt.Errorf("dnspod API call failed: %v", err)
 	}
 
@@ -118,21 +123,25 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
+		klog.Errorf("Failed to log config %v: %v", ch.Config, err)
 		return err
 	}
 
 	dnspodClient, err := c.getDNSPod(ch, cfg)
 	if err != nil {
+		klog.Errorf("Failed to get dnspod client %v: %v", cfg, err)
 		return err
 	}
 
 	domainID, err := getDomainID(dnspodClient, ch.ResolvedZone)
 	if err != nil {
+		klog.Errorf("Failed to get domain id %s: %v", ch.ResolvedZone, err)
 		return err
 	}
 
 	records, err := findTxtRecords(dnspodClient, domainID, ch.ResolvedZone, ch.ResolvedFQDN)
 	if err != nil && !strings.Contains(err.Error(), "No records") {
+		klog.Errorf("Failed to find txt records (%s, %s, %s): %v", domainID, ch.ResolvedZone, ch.ResolvedFQDN, err)
 		return err
 	}
 
@@ -143,6 +152,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 
 		_, err := dnspodClient.Domains.DeleteRecord(domainID, record.ID)
 		if err != nil {
+			klog.Errorf("Failed to delete record (%s, %s): %v", domainID, record.ID, err)
 			return err
 		}
 	}
@@ -162,6 +172,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
+		klog.Errorf("Failed to new kubernetes client: %v", err)
 		return err
 	}
 	c.client = cl
@@ -258,6 +269,7 @@ func findTxtRecords(client *dnspod.Client, domainID, zone, fqdn string) ([]dnspo
 	recordName := extractRecordName(fqdn, zone)
 	records, _, err := client.Domains.ListRecords(domainID, recordName)
 	if err != nil {
+		klog.Errorf("Failed to list records (%s, %s): %v", domainID, recordName, err)
 		return records, fmt.Errorf("dnspod API call has failed: %v", err)
 	}
 
