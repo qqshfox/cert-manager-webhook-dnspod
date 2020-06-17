@@ -384,6 +384,8 @@ github.com/prometheus/procfs v0.0.2 h1:6LJUbpNm42llc4HRCuvApCSWB/WfhuNo9K98Q9sNG
 github.com/prometheus/procfs v0.0.2/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsTZCD3I8kEA=
 github.com/qqshfox/dnspod-go v0.2.2 h1:4+Ra5sKN2VAwWeCvMUUjQ4XzdqP9V49Y1PQrzhzZdA0=
 github.com/qqshfox/dnspod-go v0.2.2/go.mod h1:vZ2tzao81q03Zp1ss0atTRnonAes9v6d4J8UK/ybd3E=
+github.com/qqshfox/dnspod-go v0.2.3 h1:OavDBg+80AQQsyg79Nnrq+hYWBw3+2zZuELkTJTEttk=
+github.com/qqshfox/dnspod-go v0.2.3/go.mod h1:j4KJZugNw+CnsVSWXaFGD0VY5MQ36ZisP1tfEZk0qW8=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/remyoudompheng/bigfft v0.0.0-20170806203942-52369c62f446/go.mod h1:uYEyJGbgTkfkS4+E/PavXkNJcbFIpEtjt2B0KDQ5+9M=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=

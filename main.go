@@ -140,7 +140,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	}
 
 	records, err := findTxtRecords(dnspodClient, domainID, ch.ResolvedZone, ch.ResolvedFQDN)
-	if err != nil && !strings.Contains(err.Error(), "No records") {
+	if err != nil {
 		klog.Errorf("Failed to find txt records (%s, %s, %s): %v", domainID, ch.ResolvedZone, ch.ResolvedFQDN, err)
 		return err
 	}
