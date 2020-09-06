@@ -15,6 +15,7 @@ Generate API ID and API Token from DNSPod (https://support.dnspod.cn/Kb/showarti
 
 ```console
 $ helm install --name cert-manager-webhook-dnspod ./deploy/cert-manager-webhook-dnspod \
+    --namespace <NAMESPACE-WHICH-CERT-MANAGER-INSTALLED> \
     --set groupName=<GROUP_NAME> \
     --set secrets.apiID=<DNSPOD_API_ID>,secrets.apiToken=<DNSPOD_API_TOKEN> \
     --set clusterIssuer.enabled=true,clusterIssuer.email=<EMAIL_ADDRESS>
