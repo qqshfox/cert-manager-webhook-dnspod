@@ -26,6 +26,8 @@ clusterIssuer:
   #  dnsZones:
   #    - 'example.com'
 
+# imagePullSecrets:
+#   - name: regcred
 image:
   repository: qqshfox/cert-manager-webhook-dnspod
   #tag: latest
